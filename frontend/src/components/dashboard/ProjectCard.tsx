@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { apiRequest } from "../../lib/api";
 import Link from "next/link";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
@@ -43,17 +44,9 @@ export default function ProjectCard({ project, onDelete, onRename }: ProjectCard
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8092/api/projects/${project.projectId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+      await apiRequest(`/projects/${project.projectId}`, {
+        method: "DELETE"
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete project");
-      }
 
       onDelete(project.projectId);
     } catch (err) {

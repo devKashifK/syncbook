@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { apiRequest } from "../../lib/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -33,24 +34,13 @@ export default function RenameProjectModal({ project, isOpen, onClose, onSuccess
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8092/api/projects/${project.projectId}`, {
+      const data = await apiRequest(`/projects/${project.projectId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify({ 
           projectName: name.trim(),
           projectDescription: description.trim() 
         }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to rename project");
-      }
 
       onSuccess(data);
     } catch (err: any) {

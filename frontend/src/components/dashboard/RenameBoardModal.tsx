@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiRequest } from '../../lib/api';
 import {
   Dialog,
   DialogContent,
@@ -46,26 +47,13 @@ export default function RenameBoardModal({ board, isOpen, onClose, onSuccess }: 
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No authentication token found. Please log in again.");
-
-      const response = await fetch(`http://localhost:8092/api/boards/${board.id}`, {
+      const data = await apiRequest(`/boards/${board.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({ 
           name: name.trim(),
           projectId: String(board.projectId)
         })
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to rename board');
-      }
 
       onSuccess(data.board);
     } catch (err: any) {

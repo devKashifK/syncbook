@@ -8,7 +8,8 @@ import CreateBoardModal from "../../../../components/dashboard/CreateBoardModal"
 import BoardCard from "../../../../components/dashboard/BoardCard";
 import NotAuthenticatedScreen from "../../../../components/auth/NotAuthenticatedScreen";
 import Link from "next/link";
-import { Button } from "../../../../components/ui/button";
+import { buttonVariants } from "../../../../components/ui/button";
+import { cn } from "../../../../lib/utils";
 
 type Board = {
   id: string;
@@ -94,12 +95,13 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-4 md:mb-8">
-        <Button asChild variant="ghost" className="mb-2 text-slate-500 hover:text-slate-800 -ml-4 text-xs h-8">
-          <Link href="/dashboard">
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-            Back to Projects
-          </Link>
-        </Button>
+        <Link 
+          href="/dashboard"
+          className={cn(buttonVariants({ variant: "ghost" }), "mb-2 text-slate-500 hover:text-slate-800 -ml-4 text-xs h-8")}
+        >
+          <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+          Back to Projects
+        </Link>
         <h1 className="text-xl md:text-3xl font-extrabold text-slate-800 flex items-center gap-2">
           <FolderKanban className="h-6 w-6 md:h-8 md:w-8 text-indigo-500" />
           {projectTitle}

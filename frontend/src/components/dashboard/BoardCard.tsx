@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { apiRequest } from "../../lib/api";
 import Link from "next/link";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
@@ -43,17 +44,9 @@ export default function BoardCard({ board, onDelete, onRename }: BoardCardProps)
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8092/api/boards/${board.id}?projectId=${board.projectId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+      await apiRequest(`/boards/${board.id}?projectId=${board.projectId}`, {
+        method: "DELETE"
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete board");
-      }
 
       onDelete(board.id);
     } catch (err) {

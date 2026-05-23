@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiRequest } from '../../lib/api';
 import {
   Dialog,
   DialogContent,
@@ -32,26 +33,13 @@ export default function CreateBoardModal({ isOpen, onClose, onSuccess, projectId
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No authentication token found. Please log in again.");
-
-      const response = await fetch('http://localhost:8092/api/boards', {
+      const data = await apiRequest('/boards', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({ 
           name: name.trim(),
           projectId: String(projectId)
         })
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create board');
-      }
 
       // data contains { message: "...", board: { id, name, userId } }
       onSuccess(data.board);

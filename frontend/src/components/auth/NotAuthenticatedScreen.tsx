@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldAlert, ArrowRight, LayoutDashboard, PlusCircle, Layers } from "lucide-react";
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
+import { cn } from "../../lib/utils";
 
 export default function NotAuthenticatedScreen() {
   return (
@@ -18,17 +19,19 @@ export default function NotAuthenticatedScreen() {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-        <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-base py-6" size="lg">
-          <Link href="/login">
-            Login to Workspace
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="w-full text-base py-6" size="lg">
-          <Link href="/signup">
-            Create Account
-          </Link>
-        </Button>
+        <Link 
+          href="/login"
+          className={cn(buttonVariants(), "w-full bg-blue-600 hover:bg-blue-700 text-base py-6 flex items-center justify-center")}
+        >
+          Login to Workspace
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Link>
+        <Link 
+          href="/signup"
+          className={cn(buttonVariants({ variant: "outline" }), "w-full text-base py-6 flex items-center justify-center")}
+        >
+          Create Account
+        </Link>
       </div>
 
       {/* Feature Preview Section */}
@@ -38,7 +41,7 @@ export default function NotAuthenticatedScreen() {
             <LayoutDashboard className="h-5 w-5" />
           </div>
           <h3 className="font-bold text-slate-800 mb-1">Visual Workspaces</h3>
-          <p className="text-sm text-slate-500">Manage all your projects from a single, unified bird's-eye view.</p>
+          <p className="text-sm text-slate-500">Manage all your projects from a single, unified bird&apos;s-eye view.</p>
         </div>
         
         <div className="flex flex-col items-center text-center md:items-start md:text-left">

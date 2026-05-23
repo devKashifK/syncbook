@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { apiRequest } from "../../lib/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -32,24 +33,13 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Creat
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8092/api/projects/create", {
+      const data = await apiRequest("/projects/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify({ 
           projectName: name.trim(),
           projectDescription: description.trim() 
         }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create project");
-      }
 
       onSuccess(data);
       setName("");

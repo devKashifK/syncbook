@@ -5,10 +5,11 @@ import { notFound } from 'next/navigation';
 import { useEffect, use, useState } from 'react';
 import { apiRequest } from '../../../../lib/api';
 import BoardComponent from '../../../../components/board/Board';
-import { Button } from '../../../../components/ui/button';
+import { buttonVariants } from '../../../../components/ui/button';
 import { LayoutTemplate, Loader2, ArrowLeft } from 'lucide-react';
 import NotAuthenticatedScreen from '../../../../components/auth/NotAuthenticatedScreen';
 import Link from 'next/link';
+import { cn } from '../../../../lib/utils';
 
 export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   // Extract id correctly for Next.js App router
@@ -76,12 +77,13 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
     <div className="flex flex-col h-full bg-slate-50/50">
       <div className="px-4 py-3 md:px-6 md:py-4 bg-white border-b sticky top-0 z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4">
-          <Button asChild variant="ghost" size="sm" className="text-slate-500 hover:text-slate-800 -ml-2 text-xs h-8">
-            <Link href={projectId ? `/project/${projectId}` : "/dashboard"}>
-              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-              Back
-            </Link>
-          </Button>
+          <Link 
+            href={projectId ? `/project/${projectId}` : "/dashboard"}
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-slate-500 hover:text-slate-800 -ml-2 text-xs h-8")}
+          >
+            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+            Back
+          </Link>
           <div className="bg-blue-100 text-blue-600 p-1.5 rounded-lg hidden sm:block">
             <LayoutTemplate className="h-4.5 w-4.5" />
           </div>
