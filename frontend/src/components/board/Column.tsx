@@ -80,7 +80,7 @@ export default function ColumnComponent({ column, tasks, boardId }: ColumnProps)
 
       <div className="p-1.5">
         <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-          <AlertDialogTrigger asChild>
+          <AlertDialogTrigger>
             <Button
               variant="ghost"
               className="w-full justify-start text-slate-500 hover:bg-slate-200 hover:text-slate-800 h-8 text-xs"
