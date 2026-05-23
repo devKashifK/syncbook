@@ -31,6 +31,7 @@ type BoardState = {
   activeTimerTaskId: string | null;
   setActiveBoard: (id: string) => void;
   // ASYNC ACTIONS
+  fetchAllBoards: () => Promise<void>;
   fetchTasks: (boardId: string) => Promise<void>;
   addTask: (boardId: string, columnId: string, title: string) => Promise<void>;
   updateTask: (taskId: string, updates: Partial<Task>) => Promise<void>;
@@ -54,6 +55,39 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   activeTimerTaskId: null,
   
   setActiveBoard: (id) => set({ activeBoardId: id }),
+
+  fetchAllBoards: async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await fetch('http://localhost:8092/api/boards', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        set((state) => {
+          const newBoards = [...state.boards];
+          data.forEach((serverBoard: any) => {
+            const existing = newBoards.find(b => b.id === serverBoard.id);
+            if (existing) {
+              existing.title = serverBoard.name;
+            } else {
+              newBoards.push({
+                id: serverBoard.id,
+                title: serverBoard.name,
+                columns: defaultColumns,
+                tasks: []
+              });
+            }
+          });
+          return { boards: newBoards };
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch all boards", err);
+    }
+  },
   
   fetchTasks: async (boardId: string) => {
     const token = localStorage.getItem('token');
@@ -63,7 +97,16 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       const res = await fetch(`http://localhost:8092/api/tasks/board/${boardId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const data = await res.json();
+      
+      const text = await res.text();
+      let data = [];
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error("Failed to parse tasks response:", text);
+        }
+      }
       
       let fetchedTasks: Task[] = [];
       if (Array.isArray(data)) {

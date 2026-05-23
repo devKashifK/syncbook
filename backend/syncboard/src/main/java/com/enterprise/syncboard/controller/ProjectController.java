@@ -133,16 +133,13 @@ public class ProjectController {
             Project project = projectRepository.findByProjectIdAndUserId(projectId, userId)
                     .orElseThrow(() -> new RuntimeException("Project not found or unauthorized."));
 
-            // Cascade delete boards and their tasks manually
             List<Board> boards = boardRepository.findByProjectIdAndUserId(projectId, userId);
             for (Board board : boards) {
                 try {
-                    // Attempt to map the board's UUID string to the Task's Long boardId
-                    Long bId = Long.parseLong(board.getId().toString());
+                    String bId = board.getId().toString();
                     List<Task> tasks = taskRepository.findByBoardIdAndUserId(bId, userId);
                     taskRepository.deleteAll(tasks);
                 } catch (Exception ignored) {
-                    // If board ID is a strict UUID, it cannot be parsed to Long for Task query
                 }
             }
             boardRepository.deleteAll(boards);

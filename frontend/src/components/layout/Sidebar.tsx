@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useBoardStore } from '../../store/boardStore';
@@ -9,7 +10,12 @@ import { cn } from '../../lib/utils';
 export default function Sidebar() {
   const boards = useBoardStore(state => state.boards);
   const activeBoardId = useBoardStore(state => state.activeBoardId);
+  const fetchAllBoards = useBoardStore(state => state.fetchAllBoards);
   const pathname = usePathname();
+
+  useEffect(() => {
+    fetchAllBoards();
+  }, [fetchAllBoards]);
 
   // Do not show the sidebar on the main dashboard screen
   if (pathname === '/dashboard') {

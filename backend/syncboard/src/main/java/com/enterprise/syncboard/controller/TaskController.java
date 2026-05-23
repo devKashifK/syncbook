@@ -28,6 +28,19 @@ public class TaskController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+    @GetMapping("/fix-db")
+    public ResponseEntity<?> fixDb() {
+        try {
+            jdbcTemplate.execute("ALTER TABLE tasks ALTER COLUMN board_id DROP NOT NULL");
+            return ResponseEntity.ok("Fixed DB schema!");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
     // GET ALL TASKS FOR A USER
     @GetMapping
     public ResponseEntity<?> getAllTasks(
@@ -53,7 +66,7 @@ public class TaskController {
     @GetMapping("/board/{boardId}")
     public ResponseEntity<?> getTasksByBoard(
             @RequestHeader("Authorization") String authHeader, 
-            @PathVariable("boardId") Long boardId) {
+            @PathVariable("boardId") String boardId) {
             
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("error", "Missing or invalid authorization token layer."));
@@ -111,15 +124,14 @@ public class TaskController {
             String email = jwtUtil.getEmailFromToken(token);
             UUID userId = userRepository.findByEmail(email).orElseThrow().getId();
 
-            // Instantiate and populate the Task entity matching your precise data types
             Task newTask = new Task();
-            newTask.setBoardId(Long.parseLong(boardIdStr));
+            newTask.setBoardId(boardIdStr);
             newTask.setTaskName(taskName);
             newTask.setStatus(status);
             newTask.setDescription(description);
             newTask.setTimeSetByUser(timeSetByUser);
             newTask.setUserId(userId);
-            newTask.setCreatedAt(java.time.LocalDateTime.now()); // Automatically stamp the creation time
+            newTask.setCreatedAt(java.time.LocalDateTime.now()); 
 
             Task savedTask = taskRepository.save(newTask);
             return ResponseEntity.ok(savedTask);

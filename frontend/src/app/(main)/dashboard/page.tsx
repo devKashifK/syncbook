@@ -19,6 +19,8 @@ type Task = {
   taskName: string;
   status: string;
   boardId: number;
+  timeSetByUser?: string;
+  timeTakenByUser?: string;
 };
 
 export default function DashboardPage() {
@@ -240,8 +242,8 @@ export default function DashboardPage() {
           )}
 
           {!error && boards.length > 0 && (
-            <div className="flex flex-col gap-3">
-              {boards.slice(0, 5).map((board) => {
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
+              {boards.map((board) => {
                 const project = projects.find(p => String(p.projectId) === String(board.projectId));
                 return (
                   <div key={board.id} className="relative group/item">
@@ -286,26 +288,49 @@ export default function DashboardPage() {
           )}
 
           {!error && tasks.length > 0 && (
-            <div className="flex flex-col gap-3">
-              {tasks.slice(0, 5).map((task) => {
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
+              {tasks.map((task) => {
                 const board = boards.find(b => String(b.id) === String(task.boardId));
+                const estimatedStr = task.timeSetByUser ? `${task.timeSetByUser}m` : null;
+                
+                // Parse actual time in seconds
+                let actualStr = null;
+                if (task.timeTakenByUser) {
+                   const totalSeconds = parseInt(task.timeTakenByUser, 10);
+                   if (!isNaN(totalSeconds) && totalSeconds > 0) {
+                     const m = Math.floor(totalSeconds / 60);
+                     const s = totalSeconds % 60;
+                     actualStr = `${m}m ${s}s`;
+                   }
+                }
+
                 return (
                   <div key={task.id} className="relative group/item">
                     <Link href={`/board/${task.boardId}`}>
                       <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between group-hover/item:pr-12">
-                        <div className="flex items-center gap-3">
-                          <div className={`flex-shrink-0 w-3 h-3 rounded-full shadow-inner ${task.status === 'DONE' ? 'bg-emerald-500' : task.status === 'IN_PROGRESS' ? 'bg-blue-500' : 'bg-slate-300'}`} />
+                        <div className="flex items-start gap-3">
+                          <div className={`flex-shrink-0 mt-1.5 w-3 h-3 rounded-full shadow-inner ${task.status === 'DONE' ? 'bg-emerald-500' : task.status === 'IN_PROGRESS' ? 'bg-blue-500' : 'bg-slate-300'}`} />
                           <div>
                             <h3 className={`font-semibold text-slate-800 transition-colors truncate ${task.status === 'DONE' ? 'line-through text-slate-400' : 'group-hover/item:text-blue-600'}`}>
                               {task.taskName}
                             </h3>
-                            <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                              <LayoutDashboard className="h-3 w-3" />
-                              {board?.name || 'Uncategorized'}
-                            </p>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                              <p className="text-xs text-slate-500 flex items-center gap-1">
+                                <LayoutDashboard className="h-3 w-3" />
+                                {board?.name || 'Uncategorized'}
+                              </p>
+                              
+                              {(estimatedStr || actualStr) && (
+                                <div className="flex items-center gap-2 text-[10px] bg-slate-100/80 px-2 py-0.5 rounded text-slate-600 font-medium">
+                                  <Clock className="h-3 w-3 text-slate-400" />
+                                  {actualStr && <span>Act: <span className="text-slate-800">{actualStr}</span></span>}
+                                  {estimatedStr && <span>Est: <span className="text-slate-800">{estimatedStr}</span></span>}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded shrink-0">
                           {task.status.replace('_', ' ')}
                         </span>
                       </div>

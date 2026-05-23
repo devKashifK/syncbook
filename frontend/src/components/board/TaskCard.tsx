@@ -98,18 +98,6 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
 
   const isRunning = task.timerStatus === 'running';
 
-  // Generate a consistent color based on task ID
-  const borderColors = [
-    'border-l-blue-500',
-    'border-l-rose-500',
-    'border-l-amber-500',
-    'border-l-indigo-500',
-    'border-l-fuchsia-500',
-    'border-l-cyan-500'
-  ];
-  const colorIndex = task.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % borderColors.length;
-  const leftBorderColor = borderColors[colorIndex];
-
   return (
     <>
       <Draggable draggableId={task.id} index={index}>
@@ -134,16 +122,15 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
             
             <Card
               className={cn(
-                "relative shadow-sm cursor-pointer hover:border-slate-300 transition-colors border-l-4 overflow-hidden",
-                leftBorderColor,
-                snapshot.isDragging && "shadow-lg border-primary",
-                isRunning && "border-emerald-500 shadow-emerald-500/20 shadow-sm"
+                "relative shadow-sm cursor-pointer border-slate-200 hover:border-blue-300 transition-colors overflow-hidden",
+                snapshot.isDragging && "shadow-lg border-blue-400",
+                isRunning && "border-emerald-400 shadow-emerald-500/20 shadow-sm"
               )}
             >
-              <CardContent className="p-3">
+              <CardContent className="p-2.5">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="flex gap-1.5 items-start">
-                    <GripVertical className="h-4 w-4 text-slate-300 shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity -ml-2" />
+                  <div className="flex gap-2 items-start">
+                    <GripVertical className="h-4 w-4 text-slate-300 shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity -ml-1" />
                     <Icon icon={iconName} className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
                     <p className="text-sm text-slate-800 font-medium leading-tight pr-6 ml-1">
                       {task.title}

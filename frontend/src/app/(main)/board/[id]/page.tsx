@@ -5,8 +5,7 @@ import { notFound } from 'next/navigation';
 import { useEffect, use, useState } from 'react';
 import BoardComponent from '../../../../components/board/Board';
 import { Button } from '../../../../components/ui/button';
-import { MoreHorizontal, Users, Filter, LayoutTemplate, Loader2, ArrowLeft } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '../../../../components/ui/avatar';
+import { LayoutTemplate, Loader2, ArrowLeft } from 'lucide-react';
 import NotAuthenticatedScreen from '../../../../components/auth/NotAuthenticatedScreen';
 import Link from 'next/link';
 
@@ -89,11 +88,9 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
     <div className="flex flex-col h-full bg-slate-50/50">
       <div className="px-6 py-4 bg-white border-b sticky top-0 z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <Button asChild variant="ghost" size="sm" className="text-slate-500 hover:text-slate-800 -ml-2">
-            <Link href={projectId ? `/project/${projectId}` : "/dashboard"}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Link>
+          <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-800 -ml-2" render={<Link href={projectId ? `/project/${projectId}` : "/dashboard"} />}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
           </Button>
           <div className="bg-blue-100 text-blue-600 p-2 rounded-lg hidden sm:block">
             <LayoutTemplate className="h-5 w-5" />
@@ -101,33 +98,12 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
           <h1 className="text-xl font-bold text-slate-800">{boardTitle}</h1>
           <div className="h-6 w-px bg-slate-200 mx-2 hidden sm:block" />
           <div className="hidden sm:flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-8 text-slate-500 hover:text-slate-800">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
+            {/* Filter button removed as it is unimplemented */}
           </div>
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="flex -space-x-2">
-            <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
-              <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs">JD</AvatarFallback>
-            </Avatar>
-            <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
-              <AvatarFallback className="bg-rose-100 text-rose-700 text-xs">+3</AvatarFallback>
-            </Avatar>
-          </div>
-          <Button variant="outline" size="sm" className="h-8 hidden sm:flex">
-            <Users className="h-4 w-4 mr-2" />
-            Share
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          {/* Unimplemented share and avatar features have been removed */}
         </div>
       </div>
       <div className="flex-1 overflow-x-auto p-4">

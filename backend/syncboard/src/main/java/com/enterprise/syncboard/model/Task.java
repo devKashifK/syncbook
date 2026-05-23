@@ -17,8 +17,8 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
 
-    @Column(name = "board_id", nullable = false) 
-    private Long boardId;
+    @Column(name = "board_uuid", nullable = false) 
+    private String boardId;
 
     @Column(name = "task_name", nullable = false, columnDefinition = "text")
     private String taskName;
