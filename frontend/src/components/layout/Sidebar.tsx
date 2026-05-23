@@ -23,7 +23,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 border-r bg-slate-50 min-h-[calc(100vh-3.5rem)] flex flex-col">
+    <aside className="hidden md:flex w-64 border-r bg-slate-50 min-h-[calc(100vh-3.5rem)] flex-col">
       <div className="p-4 py-6">
         <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">
           Your Boards

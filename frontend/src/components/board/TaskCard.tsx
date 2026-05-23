@@ -2,7 +2,6 @@
 
 import { Draggable } from '@hello-pangea/dnd';
 import { Task, useBoardStore } from '../../store/boardStore';
-import { Card, CardContent } from '../ui/card';
 import { Clock, AlignLeft, Trash2, Play, Square, GripVertical } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import TaskModal from './TaskModal';
@@ -120,60 +119,57 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
               <div className="absolute -inset-0.5 bg-emerald-500 rounded-lg blur opacity-30 animate-pulse"></div>
             )}
             
-            <Card
+            <div
               className={cn(
-                "relative shadow-sm cursor-pointer border-slate-200 hover:border-blue-300 transition-colors overflow-hidden",
-                snapshot.isDragging && "shadow-lg border-blue-400",
-                isRunning && "border-emerald-400 shadow-emerald-500/20 shadow-sm"
+                "relative shadow-sm cursor-pointer border border-slate-200 hover:border-blue-400 hover:shadow transition-all rounded-lg bg-white p-2 flex items-center justify-between gap-2 w-full",
+                snapshot.isDragging && "shadow-md border-blue-500",
+                isRunning && "border-emerald-400 bg-emerald-50/10 shadow-emerald-500/10"
               )}
             >
-              <CardContent className="p-2.5">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex gap-2 items-start">
-                    <GripVertical className="h-4 w-4 text-slate-300 shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity -ml-1" />
-                    <Icon icon={iconName} className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
-                    <p className="text-sm text-slate-800 font-medium leading-tight pr-6 ml-1">
-                      {task.title}
-                    </p>
-                  </div>
-                  <div className="flex opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className={cn("h-6 w-6", isRunning ? "text-red-500 hover:text-red-600 hover:bg-red-50" : "text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50")}
-                      onClick={handleToggleTimer}
-                      title={isRunning ? "End Timer" : "Start Timer"}
-                    >
-                      {isRunning ? <Square className="h-3 w-3 fill-current" /> : <Play className="h-3 w-3 fill-current" />}
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-red-500" onClick={handleDeleteClick}>
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <GripVertical className="h-3.5 w-3.5 text-slate-300 shrink-0 cursor-grab active:cursor-grabbing" />
+                <Icon icon={iconName} className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="text-xs font-semibold text-slate-700 block truncate leading-snug">
+                    {task.title}
+                  </span>
+                  
+                  {(task.description || task.actualTime > 0 || task.estimatedTime > 0 || isRunning) && (
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      {task.description && (
+                        <AlignLeft className="h-2.5 w-2.5 text-slate-400 shrink-0" title="Has description" />
+                      )}
+                      {(task.actualTime > 0 || task.estimatedTime > 0 || isRunning) && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1 text-[9px] px-1 py-0.5 rounded font-mono font-medium",
+                          isRunning ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600",
+                          task.timerStatus === 'completed' && task.actualTime / 60 > task.estimatedTime && task.estimatedTime > 0 ? "bg-orange-100 text-orange-700" : ""
+                        )}>
+                          <Clock className="h-2.5 w-2.5" />
+                          {formatTime(task.actualTime)}
+                          {task.estimatedTime > 0 && `/${task.estimatedTime}m`}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="flex items-center gap-3 text-slate-500 text-xs">
-                  {task.description && (
-                    <div className="flex items-center gap-1" title="Has description">
-                      <AlignLeft className="h-3 w-3" />
-                    </div>
-                  )}
-                  {(task.actualTime > 0 || task.estimatedTime > 0 || isRunning) && (
-                    <div className={cn(
-                      "flex items-center gap-1 px-1.5 py-0.5 rounded transition-colors",
-                      isRunning ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600",
-                      task.timerStatus === 'completed' && task.actualTime / 60 > task.estimatedTime && task.estimatedTime > 0 ? "bg-orange-100 text-orange-700" : ""
-                    )}>
-                      <Clock className="h-3 w-3" />
-                      <span>
-                        {formatTime(task.actualTime)}
-                        {task.estimatedTime > 0 && ` / ${task.estimatedTime}m`}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+              <div className="flex items-center gap-0.5 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn("h-6 w-6 shrink-0 rounded", isRunning ? "text-red-500 hover:bg-red-50" : "text-emerald-500 hover:bg-emerald-50")}
+                  onClick={handleToggleTimer}
+                  title={isRunning ? "End Timer" : "Start Timer"}
+                >
+                  {isRunning ? <Square className="h-2.5 w-2.5 fill-current" /> : <Play className="h-2.5 w-2.5 fill-current" />}
+                </Button>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-red-500 shrink-0 rounded" onClick={handleDeleteClick}>
+                  <Trash2 className="h-2.5 w-2.5" />
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </Draggable>
@@ -189,7 +185,7 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the task "{task.title}".
+              This action cannot be undone. This will permanently delete the task &quot;{task.title}&quot;.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

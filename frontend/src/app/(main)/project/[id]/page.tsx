@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, LayoutTemplate, FolderKanban, Loader2, ArrowLeft } from "lucide-react";
+import { apiRequest } from "../../../../lib/api";
 import CreateBoardModal from "../../../../components/dashboard/CreateBoardModal";
 import BoardCard from "../../../../components/dashboard/BoardCard";
 import NotAuthenticatedScreen from "../../../../components/auth/NotAuthenticatedScreen";
@@ -27,27 +28,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const [projectTitle, setProjectTitle] = useState("Loading Project...");
 
   const fetchProjectData = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setIsAuthenticated(false);
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Fetch project details to get the title
-      const resProjects = await fetch("http://localhost:8092/api/projects", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      const [projectsData, boardsData] = await Promise.all([
+        apiRequest("/projects"),
+        apiRequest(`/boards/project/${id}`)
+      ]);
 
-      if (resProjects.status === 401) {
-        localStorage.removeItem("token");
-        setIsAuthenticated(false);
-        setLoading(false);
-        return;
-      }
-
-      const projectsData = await resProjects.json();
       if (Array.isArray(projectsData)) {
         const project = projectsData.find((p: any) => String(p.projectId) === id);
         if (project) {
@@ -57,24 +43,17 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         }
       }
 
-      // Fetch boards for this project
-      const resBoards = await fetch(`http://localhost:8092/api/boards/project/${id}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      const boardsData = await resBoards.json();
-
-      if (!resBoards.ok) {
-        throw new Error(boardsData.error || "Failed to fetch boards");
-      }
-
       if (Array.isArray(boardsData)) {
         setBoards(boardsData);
       } else {
         setBoards([]);
       }
     } catch (err: any) {
-      setError(err.message || "Failed to connect to the server.");
+      if (err.message === 'Unauthorized') {
+        setIsAuthenticated(false);
+      } else {
+        setError(err.message || "Failed to connect to the server.");
+      }
     } finally {
       setLoading(false);
     }
@@ -113,24 +92,24 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto w-full">
-      <div className="mb-8">
-        <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-800 -ml-4">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
+      <div className="mb-4 md:mb-8">
+        <Button asChild variant="ghost" className="mb-2 text-slate-500 hover:text-slate-800 -ml-4 text-xs h-8">
           <Link href="/dashboard">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
             Back to Projects
           </Link>
         </Button>
-        <h1 className="text-3xl font-extrabold text-slate-800 flex items-center gap-3">
-          <FolderKanban className="h-8 w-8 text-indigo-500" />
+        <h1 className="text-xl md:text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+          <FolderKanban className="h-6 w-6 md:h-8 md:w-8 text-indigo-500" />
           {projectTitle}
         </h1>
-        <p className="text-slate-500 mt-2">Manage all the boards within this project.</p>
+        <p className="text-xs md:text-sm text-slate-500 mt-1">Manage all the boards within this project.</p>
       </div>
 
-      <div className="mb-10">
-        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-200">
-          <LayoutTemplate className="h-5 w-5 text-slate-500" />
+      <div className="mb-6 md:mb-10">
+        <h2 className="text-sm md:text-lg font-bold text-slate-800 flex items-center gap-2 mb-3 border-b pb-2 border-slate-200">
+          <LayoutTemplate className="h-4 w-4 md:h-5 md:w-5 text-slate-500" />
           Project Boards
         </h2>
         
@@ -153,10 +132,10 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             {/* Create New Board Tile */}
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="h-28 bg-slate-100 hover:bg-slate-200 border border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center text-slate-600 hover:text-slate-800 transition-colors shadow-sm"
+              className="h-24 bg-slate-50 hover:bg-slate-100/80 border border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center text-slate-500 hover:text-blue-600 transition-colors shadow-sm"
             >
-              <Plus className="h-6 w-6 mb-1" />
-              <span className="text-sm font-medium">Create new board</span>
+              <Plus className="h-5 w-5 mb-0.5" />
+              <span className="text-xs font-semibold">Create new board</span>
             </button>
           </div>
         )}

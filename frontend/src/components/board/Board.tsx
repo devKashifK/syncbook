@@ -11,7 +11,9 @@ export default function BoardComponent({ board }: { board: BoardType }) {
   const [isBrowser, setIsBrowser] = useState(false);
 
   useEffect(() => {
-    setIsBrowser(true);
+    setTimeout(() => {
+      setIsBrowser(true);
+    }, 0);
   }, []);
 
   const onDragEnd = (result: DropResult) => {

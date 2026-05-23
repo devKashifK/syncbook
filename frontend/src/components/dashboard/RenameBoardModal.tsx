@@ -32,7 +32,10 @@ export default function RenameBoardModal({ board, isOpen, onClose, onSuccess }: 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setName(board.name);
+    const n = board.name;
+    setTimeout(() => {
+      setName(n);
+    }, 0);
   }, [board.name, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {

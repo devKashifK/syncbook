@@ -28,7 +28,7 @@ export default function QuoteCarousel() {
         const res = await fetch('https://dummyjson.com/quotes?limit=10');
         const data = await res.json();
         if (data && data.quotes && data.quotes.length > 0) {
-          const formattedQuotes = data.quotes.map((q: any) => ({
+          const formattedQuotes = data.quotes.map((q: { quote: string; author: string }) => ({
             text: q.quote,
             author: q.author
           }));
@@ -69,7 +69,7 @@ export default function QuoteCarousel() {
         
         <div className={`flex-1 transition-opacity duration-500 text-center sm:text-left ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
           <p className="text-sm font-medium text-slate-700 italic leading-relaxed">
-            "{quotes[currentIndex].text}"
+            &quot;{quotes[currentIndex].text}&quot;
           </p>
         </div>
         

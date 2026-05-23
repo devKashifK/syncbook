@@ -12,7 +12,7 @@ export default function MainLayout({
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-x-auto bg-slate-50 relative">
+        <main className="flex-1 overflow-x-auto bg-slate-50 relative pb-16 md:pb-0">
           {/* Subtle background pattern without the top-only mask */}
           <div className="fixed inset-0 z-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none opacity-40"></div>
           

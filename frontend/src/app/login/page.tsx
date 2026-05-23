@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import { apiRequest } from "../../lib/api";
 import Link from "next/link";
 import { Kanban, ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
 
@@ -23,19 +24,10 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8092/api/auth/login", {
+      const data = await apiRequest("/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Invalid email or password.");
-      }
 
       localStorage.setItem("token", data.token);
       router.push("/dashboard");

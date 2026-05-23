@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
+import { apiRequest } from '../lib/api';
 
 export type Task = {
   id: string;
@@ -57,14 +58,8 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   setActiveBoard: (id) => set({ activeBoardId: id }),
 
   fetchAllBoards: async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
     try {
-      const res = await fetch('http://localhost:8092/api/boards', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) return;
-      const data = await res.json();
+      const data = await apiRequest('/boards');
       if (Array.isArray(data)) {
         set((state) => {
           const newBoards = [...state.boards];
@@ -90,24 +85,8 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
   
   fetchTasks: async (boardId: string) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    
     try {
-      const res = await fetch(`http://localhost:8092/api/tasks/board/${boardId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      const text = await res.text();
-      let data = [];
-      if (text) {
-        try {
-          data = JSON.parse(text);
-        } catch (e) {
-          console.error("Failed to parse tasks response:", text);
-        }
-      }
-      
+      const data = await apiRequest(`/tasks/board/${boardId}`);
       let fetchedTasks: Task[] = [];
       if (Array.isArray(data)) {
          fetchedTasks = data.map((t: any) => ({
@@ -144,16 +123,9 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
 
   addTask: async (boardId, columnId, title) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     try {
-      const res = await fetch(`http://localhost:8092/api/tasks/create`, {
+      const t = await apiRequest(`/tasks/create`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({
           boardId,
           taskName: title,
@@ -163,9 +135,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         })
       });
       
-      if (!res.ok) throw new Error('Failed to create task');
-      
-      const t = await res.json();
       const newTask: Task = {
         id: String(t.id),
         title: t.taskName,
@@ -187,9 +156,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
   
   updateTask: async (taskId, updates) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     // Optimistic update
     set((state) => {
       const newBoards = state.boards.map(board => ({
@@ -209,12 +175,8 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       if (updates.actualTime !== undefined) payload.timeTakenByUser = String(updates.actualTime);
 
       if (Object.keys(payload).length > 0) {
-        await fetch(`http://localhost:8092/api/tasks/${taskId}`, {
+        await apiRequest(`/tasks/${taskId}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
           body: JSON.stringify(payload)
         });
       }
@@ -224,9 +186,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
   
   deleteTask: async (taskId) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     // Optimistic update
     set((state) => {
       const newBoards = state.boards.map(board => ({
@@ -240,9 +199,8 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     });
 
     try {
-      await fetch(`http://localhost:8092/api/tasks/${taskId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      await apiRequest(`/tasks/${taskId}`, {
+        method: 'DELETE'
       });
     } catch (err) {
       toast.error('Failed to delete task');
@@ -250,9 +208,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
   
   moveTask: async (taskId, newColumnId, newIndex) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     // Optimistic update
     set((state) => {
       const newBoards = state.boards.map(board => {
@@ -291,12 +246,8 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     });
 
     try {
-      await fetch(`http://localhost:8092/api/tasks/${taskId}/status`, {
+      await apiRequest(`/tasks/${taskId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({ status: newColumnId })
       });
     } catch (err) {
@@ -366,14 +317,9 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         });
       }
       
-      const token = localStorage.getItem('token');
-      if (token && taskToEnd) {
-        fetch(`http://localhost:8092/api/tasks/${taskId}`, {
+      if (taskToEnd) {
+        apiRequest(`/tasks/${taskId}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
           body: JSON.stringify({ timeTakenByUser: String(taskToEnd.actualTime) })
         }).catch(() => console.error("Failed to save timer data"));
       }

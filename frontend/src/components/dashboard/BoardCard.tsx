@@ -67,46 +67,42 @@ export default function BoardCard({ board, onDelete, onRename }: BoardCardProps)
 
   return (
     <>
-      <div className="group relative h-28 bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden before:absolute before:inset-0 before:bg-blue-600/5 hover:before:bg-blue-600/10 hover:border-blue-300">
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
-        
+      <div className="group relative h-24 bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden hover:border-blue-300 p-3">
         {/* The clickable area to navigate to the board */}
         <Link href={`/board/${board.id}`} className="absolute inset-0 z-0"></Link>
         
-        <div className="relative z-10 p-4 flex justify-between items-start pointer-events-none">
-          <h3 className="font-bold text-slate-800 truncate pr-6 pointer-events-auto w-full">
+        <div className="relative z-10 flex justify-between items-start w-full pointer-events-auto">
+          <h3 className="font-semibold text-slate-800 text-sm truncate pr-2 w-full">
             <Link href={`/board/${board.id}`} className="hover:underline focus:outline-none">
               {board.name}
             </Link>
           </h3>
           
-          <div className="pointer-events-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={() => setIsRenameOpen(true)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Rename</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                  onClick={() => setIsAlertOpen(true)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-6 w-6 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36">
+              <DropdownMenuItem onClick={() => setIsRenameOpen(true)} className="text-xs">
+                <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                <span>Rename</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-red-600 focus:text-red-600 focus:bg-red-50 text-xs"
+                onClick={() => setIsAlertOpen(true)}
+              >
+                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
-        <div className="relative z-10 px-4 pb-4 flex items-center gap-2 text-xs text-slate-500 pointer-events-none">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Active
+        <div className="relative z-10 flex items-center gap-1.5 text-[11px] text-slate-500 pointer-events-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
         </div>
       </div>
 
@@ -116,7 +112,7 @@ export default function BoardCard({ board, onDelete, onRename }: BoardCardProps)
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the 
-              "{board.name}" board and all its tasks.
+              &quot;{board.name}&quot; board and all its tasks.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
