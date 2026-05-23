@@ -13,31 +13,24 @@ export default function Sidebar() {
   const fetchAllBoards = useBoardStore(state => state.fetchAllBoards);
   const pathname = usePathname();
 
-  useEffect(() => {
-    fetchAllBoards();
-  }, [fetchAllBoards]);
+  useEffect(() => { fetchAllBoards(); }, [fetchAllBoards]);
 
-  // Do not show the sidebar on the main dashboard screen
-  if (pathname === '/dashboard') {
-    return null;
-  }
+  if (pathname === '/dashboard') return null;
 
   return (
     <aside className="hidden md:flex w-64 border-r bg-slate-50 min-h-[calc(100vh-3.5rem)] flex-col">
       <div className="p-4 py-6">
-        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">
-          Your Boards
-        </h2>
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Your Boards</h2>
         <nav className="space-y-1">
           {boards.map(board => (
             <Link
               key={board.id}
               href={`/board/${board.id}`}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                (pathname === `/board/${board.id}` || activeBoardId === board.id && pathname === '/')
-                  ? "bg-slate-200/50 text-primary"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                (pathname === `/board/${board.id}` || (activeBoardId === board.id && pathname === '/'))
+                  ? 'bg-slate-200/50 text-primary'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               )}
             >
               <LayoutDashboard className="h-4 w-4" />

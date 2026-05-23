@@ -2,59 +2,42 @@
 
 import { useState, useEffect } from 'react';
 import { apiRequest } from '../../lib/api';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import FormDialog from '../ui/FormDialog';
 
-type Board = {
-  id: string;
-  name: string;
-  userId: string;
-  projectId: number;
-};
+type Board = { id: string; name: string; userId: string; projectId: number };
 
-type RenameBoardModalProps = {
+type Props = {
   board: Board;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (board: Board) => void;
 };
 
-export default function RenameBoardModal({ board, isOpen, onClose, onSuccess }: RenameBoardModalProps) {
-  const [name, setName] = useState(board.name);
+const FIELDS = [
+  { id: 'name', label: 'Board Title', required: true, type: 'input' as const },
+];
+
+export default function RenameBoardModal({ board, isOpen, onClose, onSuccess }: Props) {
+  const [values, setValues] = useState({ name: board.name });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const n = board.name;
-    setTimeout(() => {
-      setName(n);
-    }, 0);
+    setTimeout(() => setValues({ name: board.name }), 0);
   }, [board.name, isOpen]);
+
+  const handleChange = (id: string, value: string) => setValues(v => ({ ...v, [id]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || name.trim() === board.name) return;
-
+    if (!values.name.trim() || values.name.trim() === board.name) return;
     setLoading(true);
     setError(null);
-
     try {
       const data = await apiRequest(`/boards/${board.id}`, {
         method: 'PUT',
-        body: JSON.stringify({ 
-          name: name.trim(),
-          projectId: String(board.projectId)
-        })
+        body: JSON.stringify({ name: values.name.trim(), projectId: String(board.projectId) }),
       });
-
       onSuccess(data.board);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -64,46 +47,19 @@ export default function RenameBoardModal({ board, isOpen, onClose, onSuccess }: 
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Rename board</DialogTitle>
-            <DialogDescription>
-              Enter a new name for your board.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-6">
-            {error && (
-              <div className="mb-4 p-3 text-sm font-medium text-red-600 bg-red-50 rounded-lg border border-red-200">
-                ⚠️ {error}
-              </div>
-            )}
-            <div className="space-y-2">
-              <label htmlFor="rename-board" className="text-sm font-medium leading-none">
-                Board Title <span className="text-red-500">*</span>
-              </label>
-              <Input
-                id="rename-board"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoFocus
-                required
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!name.trim() || name.trim() === board.name || loading} className="bg-blue-600 hover:bg-blue-700">
-              {loading ? "Renaming..." : "Save changes"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Rename board"
+      description="Enter a new name for your board."
+      fields={FIELDS}
+      values={values}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      submitLabel="Save changes"
+      isLoading={loading}
+      error={error}
+      disabled={!values.name.trim() || values.name.trim() === board.name}
+    />
   );
 }

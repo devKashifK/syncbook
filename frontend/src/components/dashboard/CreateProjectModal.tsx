@@ -1,101 +1,62 @@
 'use client';
 
-import { useState } from "react";
-import { apiRequest } from "../../lib/api";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Loader2 } from "lucide-react";
-import { Project } from "./ProjectCard";
+import { useState } from 'react';
+import { apiRequest } from '../../lib/api';
+import FormDialog from '../ui/FormDialog';
+import { Project } from './ProjectCard';
 
-type CreateProjectModalProps = {
+type Props = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (project: Project) => void;
 };
 
-export default function CreateProjectModal({ isOpen, onClose, onSuccess }: CreateProjectModalProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+const FIELDS = [
+  { id: 'projectName', label: 'Project name', placeholder: 'e.g. Q3 Roadmap', required: true, type: 'input' as const },
+  { id: 'projectDescription', label: 'Description (optional)', placeholder: 'Briefly describe this project...', type: 'textarea' as const },
+];
+
+export default function CreateProjectModal({ isOpen, onClose, onSuccess }: Props) {
+  const [values, setValues] = useState({ projectName: '', projectDescription: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (id: string, value: string) => setValues(v => ({ ...v, [id]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!name.trim()) {
-      setError("Project name is required");
-      return;
-    }
-
+    if (!values.projectName.trim()) { setError('Project name is required'); return; }
     setIsLoading(true);
-
     try {
-      const data = await apiRequest("/projects/create", {
-        method: "POST",
-        body: JSON.stringify({ 
-          projectName: name.trim(),
-          projectDescription: description.trim() 
-        }),
+      const data = await apiRequest('/projects/create', {
+        method: 'POST',
+        body: JSON.stringify({ projectName: values.projectName.trim(), projectDescription: values.projectDescription.trim() }),
       });
-
       onSuccess(data);
-      setName("");
-      setDescription("");
+      setValues({ projectName: '', projectDescription: '' });
       onClose();
     } catch (err: any) {
-      setError(err.message || "An error occurred");
+      setError(err.message || 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
-          <DialogDescription>
-            Give your new project a name and optional description to get started.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium leading-none">Project name</label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Q3 Roadmap"
-              disabled={isLoading}
-              autoFocus
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-sm font-medium leading-none">Description (optional)</label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Briefly describe this project..."
-              disabled={isLoading}
-              rows={3}
-            />
-          </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading || !name.trim()}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Project
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Create New Project"
+      description="Give your new project a name and optional description to get started."
+      fields={FIELDS}
+      values={values}
+      onChange={handleChange}
+      onSubmit={handleSubmit}
+      submitLabel="Create Project"
+      isLoading={isLoading}
+      error={error}
+      disabled={!values.projectName.trim()}
+    />
   );
 }

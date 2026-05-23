@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import { Button } from './button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,12 +60,11 @@ export default function CardWithMenu({
               {title}
             </Link>
           </h3>
+
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-6 w-6 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
+            <DropdownMenuTrigger className="h-6 w-6 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0 outline-none">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
               <DropdownMenuItem onClick={onRename} className="text-xs">
@@ -83,6 +81,7 @@ export default function CardWithMenu({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
         {subtitle && (
           <div className="relative z-10 pointer-events-none">{subtitle}</div>
         )}
@@ -96,7 +95,11 @@ export default function CardWithMenu({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
               {isDeleting ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>

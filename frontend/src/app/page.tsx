@@ -11,17 +11,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
     if (!token) {
       router.push('/login');
       return;
     }
-
-    if (activeBoardId) {
-      router.push(`/board/${activeBoardId}`);
-    } else {
-      router.push('/dashboard');
-    }
+    router.push(activeBoardId ? `/board/${activeBoardId}` : '/dashboard');
   }, [activeBoardId, router]);
 
   return (
