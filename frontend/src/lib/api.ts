@@ -23,6 +23,8 @@ export async function apiRequest<T = any>(
   if (response.status === 401) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
+      // Also clear the cookie so middleware blocks protected routes
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
     }
     throw new Error('Unauthorized');
   }

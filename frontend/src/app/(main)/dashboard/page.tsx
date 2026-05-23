@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const fetchData = async () => {
     try {
@@ -45,11 +45,13 @@ export default function DashboardPage() {
       setProjects(Array.isArray(projectsData) ? projectsData : []);
       setBoards(Array.isArray(boardsData) ? boardsData : []);
       setTasks(Array.isArray(tasksData) ? tasksData : []);
+      setIsAuthenticated(true);
     } catch (err: any) {
       if (err.message === 'Unauthorized') {
         setIsAuthenticated(false);
       } else {
         setError(err.message || "Failed to connect to the server.");
+        setIsAuthenticated(true); // server error, but user is authed
       }
     } finally {
       setLoading(false);
@@ -106,7 +108,8 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
+  // Show spinner while loading OR while auth state is not yet determined
+  if (loading || isAuthenticated === null) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
@@ -115,9 +118,7 @@ export default function DashboardPage() {
   }
 
   if (!isAuthenticated) {
-    if (typeof window !== "undefined") {
-      router.push("/login");
-    }
+    router.push("/login");
     return null;
   }
 

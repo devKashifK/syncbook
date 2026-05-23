@@ -1,3 +1,8 @@
+'use client';
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import Navbar from "../../components/layout/Navbar";
 import Sidebar from "../../components/layout/Sidebar";
 import ActiveTimerOverlay from "../../components/board/ActiveTimerOverlay";
@@ -7,6 +12,26 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+    } else {
+      setIsAuthed(true);
+    }
+  }, [router]);
+
+  if (!isAuthed) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen relative">
       <Navbar />

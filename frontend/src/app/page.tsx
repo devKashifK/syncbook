@@ -10,6 +10,13 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
     if (activeBoardId) {
       router.push(`/board/${activeBoardId}`);
     } else {

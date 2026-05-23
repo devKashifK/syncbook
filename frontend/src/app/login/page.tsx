@@ -30,6 +30,8 @@ export default function LoginPage() {
       });
 
       localStorage.setItem("token", data.token);
+      // Also set a cookie so the middleware can protect routes server-side
+      document.cookie = `token=${data.token}; path=/; SameSite=Strict`;
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Cannot connect to the authentication server.");
