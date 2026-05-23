@@ -146,13 +146,13 @@ export default function DashboardPage() {
                 const project = projects.find(p => String(p.projectId) === String(board.projectId));
                 return (
                   <div key={board.id} className="relative group/item">
-                    <Link href={`/board/${board.id}`}>
-                      <div className="bg-white border border-slate-200 p-3 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between group-hover/item:pr-12">
-                        <div>
+                    <Link href={`/board/${board.id}`} className="block">
+                      <div className="bg-white border border-slate-200 p-3 pr-14 md:pr-3 md:group-hover/item:pr-14 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between">
+                        <div className="min-w-0">
                           <h3 className="font-semibold text-slate-800 text-sm group-hover/item:text-blue-600 transition-colors truncate">{board.name}</h3>
-                          <p className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
-                            <FolderKanban className="h-3 w-3" />
-                            {project?.projectName || 'Uncategorized'}
+                          <p className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1 shrink-0">
+                            <FolderKanban className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{project?.projectName || 'Uncategorized'}</span>
                           </p>
                         </div>
                       </div>
@@ -191,21 +191,21 @@ export default function DashboardPage() {
                   : null;
                 return (
                   <div key={task.id} className="relative group/item">
-                    <Link href={`/board/${task.boardId}`}>
-                      <div className="bg-white border border-slate-200 p-3 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between group-hover/item:pr-12">
-                        <div className="flex items-start gap-3">
+                    <Link href={`/board/${task.boardId}`} className="block">
+                      <div className="bg-white border border-slate-200 p-3 pr-14 md:pr-3 md:group-hover/item:pr-14 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between">
+                        <div className="flex items-start gap-3 min-w-0">
                           <div className={`flex-shrink-0 mt-1.5 w-2.5 h-2.5 rounded-full shadow-inner ${task.status === 'DONE' ? 'bg-blue-500' : task.status === 'IN_PROGRESS' ? 'bg-blue-400' : 'bg-slate-300'}`} />
-                          <div>
+                          <div className="min-w-0">
                             <h3 className={`font-semibold text-slate-800 text-sm transition-colors truncate ${task.status === 'DONE' ? 'line-through text-slate-400' : 'group-hover/item:text-blue-600'}`}>
                               {task.taskName}
                             </h3>
                             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
-                              <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                              <p className="text-[11px] text-slate-500 flex items-center gap-1 shrink-0">
                                 <LayoutDashboard className="h-3 w-3" />
                                 {board?.name || 'Uncategorized'}
                               </p>
                               {(estimatedStr || actualStr) && (
-                                <div className="flex items-center gap-1.5 text-[9px] bg-slate-100/80 px-1.5 py-0.5 rounded text-slate-600 font-medium">
+                                <div className="flex items-center gap-1.5 text-[9px] bg-slate-100/80 px-1.5 py-0.5 rounded text-slate-600 font-medium shrink-0">
                                   <Clock className="h-2.5 w-2.5 text-slate-400" />
                                   {actualStr && <span>Act: <span className="text-slate-800">{actualStr}</span></span>}
                                   {estimatedStr && <span>Est: <span className="text-slate-800">{estimatedStr}</span></span>}
@@ -214,7 +214,7 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         </div>
-                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-1.5 py-0.5 rounded shrink-0">
+                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-1.5 py-0.5 rounded shrink-0 ml-2">
                           {task.status.replace('_', ' ')}
                         </span>
                       </div>
