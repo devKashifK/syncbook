@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import { apiRequest } from "../../lib/api";
 import Link from "next/link";
 import { Kanban, ArrowRight, Mail, Lock, User, Loader2 } from "lucide-react";
 
@@ -30,19 +31,10 @@ export default function SignupPage() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8092/api/auth/signup", {
+      await apiRequest("/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create account.");
-      }
 
       router.push("/login?registered=true");
 
