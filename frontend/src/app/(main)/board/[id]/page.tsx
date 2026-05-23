@@ -45,9 +45,9 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
   if (isNotFound || !board) return notFound();
 
   return (
-    <div className="flex flex-col h-full bg-slate-50/50">
-      <div className="px-4 py-3 md:px-6 md:py-4 bg-white border-b sticky top-0 z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4">
+    <div className="flex flex-col flex-1 h-full bg-slate-50/50">
+      <div className="px-4 py-3 md:px-6 md:py-4 bg-white border-b sticky top-0 z-10 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 md:gap-4">
           <Link
             href={projectId ? `/project/${projectId}` : '/dashboard'}
             className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'text-slate-500 hover:text-slate-800 -ml-2 text-xs h-8')}

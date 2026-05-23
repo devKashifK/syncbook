@@ -199,14 +199,14 @@ export default function DashboardPage() {
                             <h3 className={`font-semibold text-slate-800 text-sm transition-colors truncate ${task.status === 'DONE' ? 'line-through text-slate-400' : 'group-hover/item:text-blue-600'}`}>
                               {task.taskName}
                             </h3>
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
-                              <p className="text-[11px] text-slate-500 flex items-center gap-1 shrink-0">
-                                <LayoutDashboard className="h-3 w-3" />
-                                {board?.name || 'Uncategorized'}
+                            <div className="flex items-center gap-x-3 mt-0.5 overflow-hidden">
+                              <p className="text-[11px] text-slate-500 flex items-center gap-1 shrink min-w-0">
+                                <LayoutDashboard className="h-3 w-3 shrink-0" />
+                                <span className="truncate">{board?.name || 'Uncategorized'}</span>
                               </p>
                               {(estimatedStr || actualStr) && (
                                 <div className="flex items-center gap-1.5 text-[9px] bg-slate-100/80 px-1.5 py-0.5 rounded text-slate-600 font-medium shrink-0">
-                                  <Clock className="h-2.5 w-2.5 text-slate-400" />
+                                  <Clock className="h-2.5 w-2.5 text-slate-400 shrink-0" />
                                   {actualStr && <span>Act: <span className="text-slate-800">{actualStr}</span></span>}
                                   {estimatedStr && <span>Est: <span className="text-slate-800">{estimatedStr}</span></span>}
                                 </div>
