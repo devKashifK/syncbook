@@ -31,7 +31,7 @@ export default function SignupPage() {
     setError(null);
 
     try {
-      await apiRequest("/auth/signup", {
+      await apiRequest("/auth/register", {
         method: "POST",
         body: JSON.stringify(formData),
       });
