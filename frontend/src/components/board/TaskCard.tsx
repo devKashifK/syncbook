@@ -42,7 +42,7 @@ const getIconForTitle = async (title: string): Promise<string> => {
       return icon;
     })
     .catch(() => 'lucide:circle-dashed');
-    
+
   fetchingCache.set(keyword, promise);
   return promise;
 };
@@ -51,7 +51,7 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [iconName, setIconName] = useState<string>('lucide:circle-dashed');
-  
+
   const deleteTask = useBoardStore(state => state.deleteTask);
   const startTimer = useBoardStore(state => state.startTimer);
   const endTimer = useBoardStore(state => state.endTimer);
@@ -118,7 +118,7 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
             {isRunning && (
               <div className="absolute -inset-0.5 bg-emerald-500 rounded-lg blur opacity-30 animate-pulse"></div>
             )}
-            
+
             <div
               className={cn(
                 "relative shadow-sm cursor-pointer border border-slate-200 hover:border-blue-400 hover:shadow transition-all rounded-lg bg-white p-2 flex items-center justify-between gap-2 w-full",
@@ -133,11 +133,11 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
                   <span className="text-xs font-semibold text-slate-700 block truncate leading-snug">
                     {task.title}
                   </span>
-                  
+
                   {(task.description || task.actualTime > 0 || task.estimatedTime > 0 || isRunning) && (
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {task.description && (
-                        <AlignLeft className="h-2.5 w-2.5 text-slate-400 shrink-0" title="Has description" />
+                        <AlignLeft className="h-2.5 w-2.5 text-slate-400 shrink-0" />
                       )}
                       {(task.actualTime > 0 || task.estimatedTime > 0 || isRunning) && (
                         <span className={cn(
@@ -156,9 +156,9 @@ export default function TaskCard({ task, index }: { task: Task; index: number })
               </div>
 
               <div className="flex items-center gap-0.5 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className={cn("h-6 w-6 shrink-0 rounded", isRunning ? "text-red-500 hover:bg-red-50" : "text-emerald-500 hover:bg-emerald-50")}
                   onClick={handleToggleTimer}
                   title={isRunning ? "End Timer" : "Start Timer"}

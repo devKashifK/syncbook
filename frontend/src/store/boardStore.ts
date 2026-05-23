@@ -10,7 +10,7 @@ export type Task = {
   timer: number;
   estimatedTime: number;
   actualTime: number;
-  timerStatus: 'idle' | 'running' | 'completed';
+  timerStatus: any;
   timerStartTime?: number;
 };
 
@@ -54,7 +54,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   boards: [],
   activeBoardId: null,
   activeTimerTaskId: null,
-  
+
   setActiveBoard: (id) => set({ activeBoardId: id }),
 
   fetchAllBoards: async () => {
@@ -83,22 +83,22 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       console.error("Failed to fetch all boards", err);
     }
   },
-  
+
   fetchTasks: async (boardId: string) => {
     try {
       const data = await apiRequest(`/tasks/board/${boardId}`);
       let fetchedTasks: Task[] = [];
       if (Array.isArray(data)) {
-         fetchedTasks = data.map((t: any) => ({
-           id: String(t.id),
-           title: t.taskName || '',
-           description: t.description || '',
-           columnId: t.status || 'todo',
-           timer: 0,
-           estimatedTime: t.timeSetByUser ? parseInt(t.timeSetByUser) : 0,
-           actualTime: t.timeTakenByUser ? parseInt(t.timeTakenByUser) : 0,
-           timerStatus: 'idle'
-         }));
+        fetchedTasks = data.map((t: any) => ({
+          id: String(t.id),
+          title: t.taskName || '',
+          description: t.description || '',
+          columnId: t.status || 'todo',
+          timer: 0,
+          estimatedTime: t.timeSetByUser ? parseInt(t.timeSetByUser) : 0,
+          actualTime: t.timeTakenByUser ? parseInt(t.timeTakenByUser) : 0,
+          timerStatus: 'idle'
+        }));
       }
 
       set((state) => {
@@ -134,7 +134,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
           timeSetByUser: '0'
         })
       });
-      
+
       const newTask: Task = {
         id: String(t.id),
         title: t.taskName,
@@ -154,13 +154,13 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       toast.error('Failed to add task');
     }
   },
-  
+
   updateTask: async (taskId, updates) => {
     // Optimistic update
     set((state) => {
       const newBoards = state.boards.map(board => ({
         ...board,
-        tasks: board.tasks.map(task => 
+        tasks: board.tasks.map(task =>
           task.id === taskId ? { ...task, ...updates } : task
         )
       }));
@@ -184,7 +184,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       toast.error('Failed to save task updates');
     }
   },
-  
+
   deleteTask: async (taskId) => {
     // Optimistic update
     set((state) => {
@@ -192,7 +192,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         ...board,
         tasks: board.tasks.filter(task => task.id !== taskId)
       }));
-      return { 
+      return {
         boards: newBoards,
         activeTimerTaskId: state.activeTimerTaskId === taskId ? null : state.activeTimerTaskId
       };
@@ -206,38 +206,38 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       toast.error('Failed to delete task');
     }
   },
-  
+
   moveTask: async (taskId, newColumnId, newIndex) => {
     // Optimistic update
     set((state) => {
       const newBoards = state.boards.map(board => {
         const tasks = [...board.tasks];
         const taskIndex = tasks.findIndex(t => t.id === taskId);
-        
+
         if (taskIndex !== -1) {
           const [task] = tasks.splice(taskIndex, 1);
           task.columnId = newColumnId;
-          
+
           const columnTasks = tasks.filter(t => t.columnId === newColumnId);
-          
+
           if (columnTasks.length > 0) {
-              let insertAt = 0;
-              let currentColumnIndex = 0;
-              for (let i = 0; i < tasks.length; i++) {
-                  if (tasks[i].columnId === newColumnId) {
-                      if (currentColumnIndex === newIndex) {
-                          insertAt = i;
-                          break;
-                      }
-                      currentColumnIndex++;
-                  }
-                  insertAt = i + 1;
+            let insertAt = 0;
+            let currentColumnIndex = 0;
+            for (let i = 0; i < tasks.length; i++) {
+              if (tasks[i].columnId === newColumnId) {
+                if (currentColumnIndex === newIndex) {
+                  insertAt = i;
+                  break;
+                }
+                currentColumnIndex++;
               }
-              tasks.splice(insertAt, 0, task);
+              insertAt = i + 1;
+            }
+            tasks.splice(insertAt, 0, task);
           } else {
-               tasks.push(task);
+            tasks.push(task);
           }
-  
+
           return { ...board, tasks };
         }
         return board;
@@ -316,7 +316,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
           description: `Total time: ${Math.round(actualMinutes)} min.`
         });
       }
-      
+
       if (taskToEnd) {
         apiRequest(`/tasks/${taskId}`, {
           method: 'PUT',
@@ -325,7 +325,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       }
     }
 
-    return { 
+    return {
       boards: newBoards,
       activeTimerTaskId: state.activeTimerTaskId === taskId ? null : state.activeTimerTaskId
     };
